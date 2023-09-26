@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Information Form</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Personal Information Form</h1>
+        <form id="personalInfoForm">
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
+            
+            <label for="fatherName">Father's Name:</label>
+            <input type="text" id="fatherName" name="fatherName" placeholder="Enter your father's name" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            
+            <label for="mobileNumber">Mobile Number:</label>
+            <input type="tel" id="mobileNumber" name="mobileNumber" placeholder="Enter your mobile number" required>
+            
+            <label for="postalCode">Postal Code:</label>
+            <input type="text" id="postalCode" name="postalCode" placeholder="Enter postal code" required>
+            
+            <button type="submit">Submit</button>
+        </form>
+
+        <div id="submittedData">
+            <h2>Submitted Data:</h2>
+            <p><strong>Full Name:</strong> <span id="submittedFullName"></span></p>
+            <p><strong>Father's Name:</strong> <span id="submittedFatherName"></span></p>
+            <p><strong>Email:</strong> <span id="submittedEmail"></span></p>
+            <p><strong>Mobile Number:</strong> <span id="submittedMobileNumber"></span></p>
+            <p><strong>District:</strong> <span id="submittedDistrict"></span></p>
+            <p><strong>State:</strong> <span id="submittedState"></span></p>
+            <p><strong>Block:</strong> <span id="submittedBlock"></span></p>
+        </div>
+    </div>
+
+    <script>
+        const personalInfoForm = document.getElementById('personalInfoForm');
+        const submittedFullName = document.getElementById('submittedFullName');
+        const submittedFatherName = document.getElementById('submittedFatherName');
+        const submittedEmail = document.getElementById('submittedEmail');
+        const submittedMobileNumber = document.getElementById('submittedMobileNumber');
+        const submittedDistrict = document.getElementById('submittedDistrict');
+        const submittedState = document.getElementById('submittedState');
+        const submittedBlock = document.getElementById('submittedBlock');
+        const submittedData = document.getElementById('submittedData');
+
+        personalInfoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fullName = document.getElementById('fullName').value;
+            const fatherName = document.getElementById('fatherName').value;
+            const email = document.getElementById('email').value;
+            const mobileNumber = document.getElementById('mobileNumber').value;
+            const postalCode = document.getElementById('postalCode').value;
+
+            // Fetch district, state, and block based on the postal code
+            const API = `https://api.postalpincode.in/pincode/${postalCode}`;
+            
+            try {
+                let request = await fetch(API);
+                let data = await request.json();
+
+                if (data[0] && data[0].PostOffice && data[0].PostOffice.length > 0) {
+                    const district = data[0].PostOffice[0].District;
+                    const state = data[0].PostOffice[0].State;
+                    const block = data[0].PostOffice[0].Block;
+
+                    submittedDistrict.textContent = district;
+                    submittedState.textContent = state;
+                    submittedBlock.textContent = block;
+                } else {
+                    submittedData.innerHTML = 'Postal code not found.';
+                }
+            } catch (err) {
+                console.error(err);
+                submittedData.innerHTML = 'An error occurred while fetching data.';
+            }
+
+            // Display collected data
+            submittedFullName.textContent = fullName;
+            submittedFatherName.textContent = fatherName;
+            submittedEmail.textContent = email;
+            submittedMobileNumber.textContent = mobileNumber;
+
+            submittedData.style.display = 'block';
+        });
+        console.log()
+
+    </script>
+</body>
+</html>
